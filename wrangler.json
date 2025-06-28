@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "dot-trivia",
+  "compatibility_date": "2025-06-06",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./src/index.ts",
+  "observability": {
+    "enabled": true
+  },
+  "ai": {
+    "binding": "AI"
+  }
+}

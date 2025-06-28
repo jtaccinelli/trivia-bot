@@ -1,0 +1,26 @@
+{
+  "name": "dot-trivia",
+  "author": "Jordan Accinelli",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "typegen": "wrangler types ./types/cloudflare.d.ts"
+  },
+  "keywords": [],
+  "packageManager": "pnpm@10.11.1",
+  "devDependencies": {
+    "@slack/types": "^2.14.0",
+    "@types/node": "^24.0.4",
+    "prettier": "^3.6.2",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.22.0"
+  },
+  "dependencies": {
+    "@slack/web-api": "^7.9.3",
+    "itty-router": "^5.0.18"
+  }
+}
