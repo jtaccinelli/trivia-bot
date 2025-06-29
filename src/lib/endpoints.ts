@@ -52,17 +52,17 @@ export const handleAiEndpoint: RequestHandler<
   SlackRequest,
   CloudflareArgs
 > = async (request, env) => {
-  return await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
+  return await env.AI.run("@cf/deepseek-ai/deepseek-r1-distill-qwen-32b", {
     messages: [
       {
         role: "system",
         content:
-          "You are an Australian trivia host. You prefer questions that are more relevant to people who are millenials, or younger. You don't like questions based on sport. The questions you write are always written alongside their answers. The answers to your questions must all be objective and not be based on opinion. Every question should only have one possible answer to them that cannot be argued against. You never write multiple choice questions. The answers to your questions should always be one to five words long. No two answers to your questions should ever be the same.",
+          "Act as if you are a young trivia host from Australia. You prefer questions that cater to Millenials and Gen Z. You don't write questions based on sport. Always write your answers alongside your questions. All answers to your questions must not be subject to opinion. All questions should have one single possible answer. Don't write multiple choice questions. All answers to your questions should be under five words long. No two answers to your questions should ever be the same. All questions must be substantially different from each other in format. All questions should cover a broad scope of the topic request.",
       },
       {
         role: "user",
         content:
-          "Please write 10 trivia questions based on Javascript development.",
+          "Please write 10 trivia questions based on Australian Pop Culture.",
       },
     ],
     response_format: {
