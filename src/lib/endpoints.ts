@@ -4,6 +4,7 @@ import { SlackRequest } from "../middleware/with-slack";
 
 import { isString } from "./predicates";
 import { handleCreateCommand } from "./slash";
+import { HostRequest } from "../middleware/with-host";
 
 export const handleEventsEndpoint: RequestHandler<SlackRequest> = async (
   request
@@ -37,55 +38,41 @@ export const handleSlashEndpoint: RequestHandler<SlackRequest> = async (
 };
 
 // Interactivity Endpoint
-export const handleInteractivityEndpoint: RequestHandler<SlackRequest> = async (
+export const handleInteractivityEndpoint: RequestHandler<HostRequest> = async (
   request
 ) => {
-  const payload = await request.clone().formData();
-  const values = payload.get("view.state.values");
+  try {
+    const form = await request.clone().formData();
 
-  console.log("payload", values);
+    const _payload = form.get("payload");
+    if (!isString(_payload)) {
+      throw "Payload was not provided in correct format.";
+    }
 
-  return payload;
-};
+    const payload = JSON.parse(_payload);
 
-export const handleAiEndpoint: RequestHandler<
-  SlackRequest,
-  CloudflareArgs
-> = async (request, env) => {
-  return await env.AI.run("@cf/deepseek-ai/deepseek-r1-distill-qwen-32b", {
-    messages: [
-      {
-        role: "system",
-        content:
-          "Act as if you are a young trivia host from Australia. You prefer questions that cater to Millenials and Gen Z. You don't write questions based on sport. Always write your answers alongside your questions. All answers to your questions must not be subject to opinion. All questions should have one single possible answer. Don't write multiple choice questions. All answers to your questions should be under five words long. No two answers to your questions should ever be the same. All questions must be substantially different from each other in format. All questions should cover a broad scope of the topic request.",
+    const values = Object.values<{
+      [key: string]: {
+        type: string;
+        value: string;
+      };
+    }>(payload.view.state.values).reduce(
+      (acc, view) => {
+        const [key] = Array.from(Object.keys(view));
+        return {
+          ...acc,
+          [key]: view[key].value,
+        };
       },
-      {
-        role: "user",
-        content:
-          "Please write 10 trivia questions based on Australian Pop Culture.",
-      },
-    ],
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        type: "object",
-        properties: {
-          questions: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                question: {
-                  type: "string",
-                },
-                answer: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+      {} as Record<string, string>
+    );
+
+    const topic = values.trivia__topic;
+    const count = parseInt(values.trivia__count);
+
+    const questions = await request.host.writeQuestions(topic, count);
+    return payload;
+  } catch (error) {
+    console.error(error);
+  }
 };

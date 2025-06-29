@@ -4,11 +4,11 @@ import { withUrlVerification } from "./middleware/with-url-verification";
 import { withSlack } from "./middleware/with-slack";
 
 import {
-  handleAiEndpoint,
   handleEventsEndpoint,
   handleInteractivityEndpoint,
   handleSlashEndpoint,
 } from "./lib/endpoints";
+import { withHost } from "./middleware/with-host";
 
 router.all("*", withSlack);
 
@@ -20,8 +20,7 @@ router.post("/events", handleEventsEndpoint);
 router.post("/slash", handleSlashEndpoint);
 
 // Interactivity Endpoint
+router.all("/interactive", withHost);
 router.post("/interactive", handleInteractivityEndpoint);
-
-router.get("/ai", handleAiEndpoint);
 
 export default router;
